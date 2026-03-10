@@ -183,6 +183,79 @@ describe("AutomaticRunTab", () => {
     ).toBeInTheDocument();
   });
 
+  it("disables and prunes welcome to the jungle for non-france country", async () => {
+    const onSetPipelineSources = vi.fn();
+
+    render(
+      <AutomaticRunTab
+        open
+        settings={createAppSettings({
+          searchTerms: {
+            value: ["backend engineer"],
+            default: ["backend engineer"],
+            override: null,
+          },
+          jobspyCountryIndeed: {
+            value: "united kingdom",
+            default: "united kingdom",
+            override: "united kingdom",
+          },
+          searchCities: { value: "", default: "", override: null },
+        })}
+        enabledSources={["linkedin", "welcometothejungle"]}
+        pipelineSources={["linkedin", "welcometothejungle"]}
+        onToggleSource={vi.fn()}
+        onSetPipelineSources={onSetPipelineSources}
+        isPipelineRunning={false}
+        onSaveAndRun={vi.fn().mockResolvedValue(undefined)}
+      />,
+    );
+
+    await waitFor(() => {
+      expect(onSetPipelineSources).toHaveBeenCalledWith(["linkedin"]);
+    });
+
+    const sourceButton = screen.getByRole("button", {
+      name: "Welcome to the Jungle",
+    });
+    expect(sourceButton).toBeDisabled();
+    expect(sourceButton.getAttribute("title")).toContain(
+      "Welcome to the Jungle is available only when country is France.",
+    );
+  });
+
+  it("keeps welcome to the jungle enabled for france", async () => {
+    render(
+      <AutomaticRunTab
+        open
+        settings={createAppSettings({
+          searchTerms: {
+            value: ["backend engineer"],
+            default: ["backend engineer"],
+            override: null,
+          },
+          jobspyCountryIndeed: {
+            value: "france",
+            default: "united kingdom",
+            override: "france",
+          },
+          searchCities: { value: "", default: "", override: null },
+        })}
+        enabledSources={["linkedin", "welcometothejungle"]}
+        pipelineSources={["linkedin", "welcometothejungle"]}
+        onToggleSource={vi.fn()}
+        onSetPipelineSources={vi.fn()}
+        isPipelineRunning={false}
+        onSaveAndRun={vi.fn().mockResolvedValue(undefined)}
+      />,
+    );
+
+    const sourceButton = screen.getByRole("button", {
+      name: "Welcome to the Jungle",
+    });
+    expect(sourceButton).toBeEnabled();
+  });
+
   it("disables glassdoor for unsupported countries with guidance copy", async () => {
     const onSetPipelineSources = vi.fn();
 

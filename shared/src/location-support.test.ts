@@ -55,6 +55,15 @@ describe("location-support", () => {
     expect(isSourceAllowedForCountry("glassdoor", "japan")).toBe(false);
     expect(isSourceAllowedForCountry("adzuna", "united states")).toBe(true);
     expect(isSourceAllowedForCountry("adzuna", "japan")).toBe(false);
+    expect(isSourceAllowedForCountry("welcometothejungle", "france")).toBe(
+      true,
+    );
+    expect(
+      isSourceAllowedForCountry("welcometothejungle", "united kingdom"),
+    ).toBe(false);
+    expect(isSourceAllowedForCountry("welcometothejungle", "worldwide")).toBe(
+      false,
+    );
   });
 
   it("filters incompatible sources while preserving compatible order", () => {
@@ -66,11 +75,28 @@ describe("location-support", () => {
           "glassdoor",
           "ukvisajobs",
           "adzuna",
+          "welcometothejungle",
           "linkedin",
         ],
         "united states",
       ),
     ).toEqual(["indeed", "glassdoor", "adzuna", "linkedin"]);
+  });
+
+  it("includes welcome to the jungle only for france", () => {
+    expect(
+      getCompatibleSourcesForCountry(
+        ["linkedin", "welcometothejungle"],
+        "france",
+      ),
+    ).toEqual(["linkedin", "welcometothejungle"]);
+
+    expect(
+      getCompatibleSourcesForCountry(
+        ["linkedin", "welcometothejungle"],
+        "worldwide",
+      ),
+    ).toEqual(["linkedin"]);
   });
 
   it("supports glassdoor only in explicitly supported countries", () => {

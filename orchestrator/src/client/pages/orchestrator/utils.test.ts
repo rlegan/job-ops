@@ -16,4 +16,9 @@ describe("orchestrator utils", () => {
     expect(getEnabledSources(withCreds)).toContain("adzuna");
     expect(getEnabledSources(withoutKey)).not.toContain("adzuna");
   });
+
+  it("enables welcome to the jungle without credentials", () => {
+    const settings = createAppSettings();
+    expect(getEnabledSources(settings)).toContain("welcometothejungle");
+  });
 });

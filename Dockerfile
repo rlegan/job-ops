@@ -39,6 +39,7 @@ COPY extractors/adzuna/package*.json ./extractors/adzuna/
 COPY extractors/hiringcafe/package*.json ./extractors/hiringcafe/
 COPY extractors/gradcracker/package*.json ./extractors/gradcracker/
 COPY extractors/ukvisajobs/package*.json ./extractors/ukvisajobs/
+COPY extractors/welcometothejungle/package*.json ./extractors/welcometothejungle/
 
 # Install Node dependencies with npm cache (dev deps needed for build)
 RUN --mount=type=cache,target=/root/.npm \
@@ -60,6 +61,7 @@ COPY extractors/hiringcafe ./extractors/hiringcafe
 COPY extractors/gradcracker ./extractors/gradcracker
 COPY extractors/jobspy ./extractors/jobspy
 COPY extractors/ukvisajobs ./extractors/ukvisajobs
+COPY extractors/welcometothejungle ./extractors/welcometothejungle
 
 # Build documentation site bundle
 WORKDIR /app/docs-site
@@ -106,6 +108,7 @@ COPY extractors/adzuna/package*.json ./extractors/adzuna/
 COPY extractors/hiringcafe/package*.json ./extractors/hiringcafe/
 COPY extractors/gradcracker/package*.json ./extractors/gradcracker/
 COPY extractors/ukvisajobs/package*.json ./extractors/ukvisajobs/
+COPY extractors/welcometothejungle/package*.json ./extractors/welcometothejungle/
 
 # Install production Node dependencies only
 RUN --mount=type=cache,target=/root/.npm \
@@ -123,6 +126,7 @@ COPY extractors/hiringcafe ./extractors/hiringcafe
 COPY extractors/gradcracker ./extractors/gradcracker
 COPY extractors/jobspy ./extractors/jobspy
 COPY extractors/ukvisajobs ./extractors/ukvisajobs
+COPY extractors/welcometothejungle ./extractors/welcometothejungle
 
 # Reuse Camoufox binaries from builder instead of fetching again
 COPY --from=builder /root/.cache/camoufox /root/.cache/camoufox

@@ -8,6 +8,7 @@ export const EXTRACTOR_SOURCE_IDS = [
   "ukvisajobs",
   "adzuna",
   "hiringcafe",
+  "welcometothejungle",
   "manual",
 ] as const;
 
@@ -48,6 +49,13 @@ export const EXTRACTOR_SOURCE_METADATA: Record<
     requiresCredentials: true,
   },
   hiringcafe: { label: "Hiring Cafe", order: 70, category: "pipeline" },
+  welcometothejungle: {
+    label: "Welcome to the Jungle",
+    order: 75,
+    category: "pipeline",
+    ukOnly: false,
+    requiresCredentials: false,
+  },
   manual: { label: "Manual", order: 90, category: "manual" },
 };
 

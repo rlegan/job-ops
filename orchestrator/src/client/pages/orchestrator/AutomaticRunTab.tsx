@@ -99,6 +99,9 @@ function getSourceDisabledReason(
   if (EXTRACTOR_SOURCE_METADATA[source]?.ukOnly) {
     return `${sourceLabel[source]} is available only when country is United Kingdom.`;
   }
+  if (source === "welcometothejungle") {
+    return "Welcome to the Jungle is available only when country is France.";
+  }
   return `${sourceLabel[source]} is not available for the selected country.`;
 }
 

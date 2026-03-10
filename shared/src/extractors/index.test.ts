@@ -25,4 +25,14 @@ describe("extractor source catalog", () => {
       expect(EXTRACTOR_SOURCE_METADATA[source].label.length).toBeGreaterThan(0);
     }
   });
+
+  it("registers welcome to the jungle as a pipeline source", () => {
+    expect(EXTRACTOR_SOURCE_METADATA.welcometothejungle).toEqual({
+      label: "Welcome to the Jungle",
+      order: 75,
+      category: "pipeline",
+      ukOnly: false,
+      requiresCredentials: false,
+    });
+  });
 });

@@ -71,13 +71,13 @@ function generateBackupFilename(type: "auto" | "manual"): string {
     const day = String(now.getUTCDate()).padStart(2, "0");
     return `${AUTO_BACKUP_PREFIX}${year}_${month}_${day}.db`;
   } else {
-    // Format: jobs_manual_YYYY_MM_DD_HH_MM_SS.db (local time for manual backups)
-    const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, "0");
-    const day = String(now.getDate()).padStart(2, "0");
-    const hours = String(now.getHours()).padStart(2, "0");
-    const minutes = String(now.getMinutes()).padStart(2, "0");
-    const seconds = String(now.getSeconds()).padStart(2, "0");
+    // Format: jobs_manual_YYYY_MM_DD_HH_MM_SS.db (UTC for deterministic tests and parsing)
+    const year = now.getUTCFullYear();
+    const month = String(now.getUTCMonth() + 1).padStart(2, "0");
+    const day = String(now.getUTCDate()).padStart(2, "0");
+    const hours = String(now.getUTCHours()).padStart(2, "0");
+    const minutes = String(now.getUTCMinutes()).padStart(2, "0");
+    const seconds = String(now.getUTCSeconds()).padStart(2, "0");
     return `${MANUAL_BACKUP_PREFIX}${year}_${month}_${day}_${hours}_${minutes}_${seconds}.db`;
   }
 }
