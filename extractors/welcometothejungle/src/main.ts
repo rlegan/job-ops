@@ -132,6 +132,31 @@ async function collectJobLinksOnPage(page: Page): Promise<string[]> {
   return normalized;
 }
 
+async function waitForListingContent(
+  page: Page,
+  timeoutMs = 15_000,
+): Promise<void> {
+  const deadline = Date.now() + timeoutMs;
+
+  while (Date.now() < deadline) {
+    const jobLinkCount = await page
+      .locator('a[href*="/fr/companies/"][href*="/jobs/"]')
+      .count();
+    if (jobLinkCount > 0) return;
+
+    const bodyText = ((await page.locator("body").textContent()) ?? "").trim();
+    if (
+      /aucune offre|aucun resultat|aucun résultat|no jobs|no results/i.test(
+        bodyText,
+      )
+    ) {
+      return;
+    }
+
+    await page.waitForTimeout(1_000);
+  }
+}
+
 async function tryLoadMore(page: Page): Promise<boolean> {
   const loadMoreSelectors = [
     'button:has-text("Voir plus")',
@@ -182,6 +207,32 @@ async function findNextPageUrl(page: Page): Promise<string | null> {
   }
 
   return null;
+}
+
+export function buildFallbackNextPageUrl(
+  currentUrl: string,
+  currentPath = LISTING_PATH,
+): string | null {
+  let url: URL;
+  try {
+    url = new URL(currentUrl, BASE_URL);
+  } catch {
+    return null;
+  }
+
+  if (url.pathname !== currentPath) return null;
+
+  const currentPageValue = Number.parseInt(
+    url.searchParams.get("page") ?? "",
+    10,
+  );
+  const currentPage =
+    Number.isFinite(currentPageValue) && currentPageValue > 0
+      ? currentPageValue
+      : 1;
+
+  url.searchParams.set("page", String(currentPage + 1));
+  return url.toString();
 }
 
 async function extractJob(
@@ -462,7 +513,7 @@ async function run(): Promise<void> {
         waitUntil: "domcontentloaded",
         timeout: 60_000,
       });
-      await page.waitForTimeout(1_000);
+      await waitForListingContent(page);
 
       const termDiscoveredUrls: string[] = [];
       const seenTermUrls = new Set<string>();
@@ -506,11 +557,17 @@ async function run(): Promise<void> {
         if (termDiscoveredUrls.length >= maxJobsPerTerm) break;
 
         if (await tryLoadMore(page)) {
+          await waitForListingContent(page);
           listPageNo += 1;
           continue;
         }
 
-        const nextUrl = await findNextPageUrl(page);
+        if (newlyAdded === 0) {
+          break;
+        }
+
+        const nextUrl =
+          (await findNextPageUrl(page)) || buildFallbackNextPageUrl(currentUrl);
         if (!nextUrl || visitedPaginationUrls.has(nextUrl)) {
           break;
         }
@@ -519,7 +576,7 @@ async function run(): Promise<void> {
           waitUntil: "domcontentloaded",
           timeout: 60_000,
         });
-        await page.waitForTimeout(1_000);
+        await waitForListingContent(page);
         listPageNo += 1;
       }
 
